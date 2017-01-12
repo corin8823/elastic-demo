@@ -1,0 +1,3 @@
+package: github.com/corin8823/elastic-demo
+import: 
+- package: gopkg.in/olivere/elastic.v5

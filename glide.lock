@@ -1,0 +1,14 @@
+hash: 8143ae936009a0ed4ce49a957e51d2fc536276f79c74a3258606596bc2baffe1
+updated: 2017-01-11T18:26:32.678053956+09:00
+imports:
+- name: golang.org/x/net
+  version: 5d997795f7bb1d2de5edc1f5d64af2562401c82d
+  subpackages:
+  - context
+  - context/ctxhttp
+- name: gopkg.in/olivere/elastic.v5
+  version: 044e48e014d78c704f7af2440a59e5b95c7f302c
+  subpackages:
+  - backoff
+  - uritemplates
+testImports: []
