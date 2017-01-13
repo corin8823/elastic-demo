@@ -12,32 +12,37 @@ import (
 
 // Shakespeare is a structure used for serializing/deserializing data in Elasticsearch.
 type Shakespeare struct {
-	PlayName     string `json:"play_name,omitempty"`
-	Speaker      string `json:"speaker,omitempty"`
-	SpeechNumber int    `json:"speech_number,omitempty"`
-	TextEntry    string `json:"text_entry,omitempty"`
+	LineID       int    `json:"line_id"`
+	PlayName     string `json:"play_name"`
+	SpeechNumber int    `json:"speech_number"`
+	LineNumbar   string `json:"line_number"`
+	Speaker      string `json:"speaker"`
+	TextEntry    string `json:"text_entry"`
 }
 
 func main() {
-	url := elastic.SetURL(os.Getenv("URL"))
-	auth := elastic.SetBasicAuth(os.Getenv("USER"), os.Getenv("PASSWORD"))
-	sniff := elastic.SetSniff(false)
-	client, err := elastic.NewClient(url, auth, sniff)
+	client, _ := NewClient()
+
+	// q := elastic.NewTermQuery("_index", "shakespeare")
+	q := elastic.NewSimpleQueryStringQuery("Alls")
+	result, err := client.Search().Index("shakespeare").Query(q).Do(context.Background())
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-
-	q := elastic.NewTermQuery("_index", "shakespeare")
-	result, err2 := client.Search().Index("shakespeare").Query(q).Do(context.Background())
-	if err2 != nil {
-		fmt.Println(err2.Error())
-	}
-	fmt.Println(strconv.FormatInt(result.TotalHits(), 10))
+	fmt.Println("TotalHits:", strconv.FormatInt(result.TotalHits(), 10))
 
 	var ttype Shakespeare
 	for _, v := range result.Each(reflect.TypeOf(ttype)) {
 		if s, ok := v.(Shakespeare); ok {
-			fmt.Println("play_name:", s.PlayName, "speaker:", s.Speaker)
+			fmt.Println("play_name:", s.PlayName, "speaker:", s.Speaker, "text_entry:", s.TextEntry)
 		}
 	}
+}
+
+// NewClient is elastic search client of done setting
+func NewClient() (*elastic.Client, error) {
+	url := elastic.SetURL(os.Getenv("URL"))
+	auth := elastic.SetBasicAuth(os.Getenv("USER"), os.Getenv("PASSWORD"))
+	sniff := elastic.SetSniff(false)
+	return elastic.NewClient(url, auth, sniff)
 }
